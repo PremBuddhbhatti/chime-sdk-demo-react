@@ -1,0 +1,13 @@
+.custom-grid video {
+	position: inherit !important;
+	width: 100% !important;
+	height: 100% !important;
+}
+
+.custom-grid {
+	height: 50vh;
+	width: 50vw;
+	position: relative;
+	left: 50%;
+	transform: translateX(-50%);
+}

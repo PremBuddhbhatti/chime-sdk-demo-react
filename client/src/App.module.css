@@ -1,0 +1,17 @@
+.gridVideo {
+  margin-top: 2rem;
+  height: 15rem;
+  width: 15rem;
+}
+
+.meeting-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.local {
+  display: block;
+  width: 20rem;
+  height: 20rem;
+}
