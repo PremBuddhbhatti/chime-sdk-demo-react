@@ -108,3 +108,19 @@ export const deleteAttendee = async (req, res, next) => {
 			`Deleting Attendee with id ${attendeeId} from meeting with id ${meetingId}`
 		);
 };
+export const getTranscription = async (req, res, next) => {
+	const { meetingId } = req.params;
+	const transcription = await chimeSDKMeetings
+		.startMeetingTranscription({
+			MeetingId: meetingId,
+			TranscriptionConfiguration: {
+				EngineTranscribeSettings: {
+					LanguageCode: 'en-US',
+					Region: 'us-east-1',
+					PartialResultsStability: 'medium',
+				},
+			},
+		})
+		.promise();
+	res.json(transcription);
+};

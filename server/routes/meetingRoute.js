@@ -4,6 +4,7 @@ import {
 	createMeeting,
 	deleteAttendee,
 	deleteMeeting,
+	getTranscription,
 	listAttendees,
 } from '../controllers/meeting.controller.js';
 
@@ -44,4 +45,5 @@ meetingRouter.delete(
 } */
 );
 
+meetingRouter.get('/:meetingId/transcription', getTranscription);
 export default meetingRouter;
