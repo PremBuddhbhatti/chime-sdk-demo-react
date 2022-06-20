@@ -10,6 +10,7 @@ import {
 	Pause,
 	Play,
 	useLocalVideo,
+	Record,
 } from 'amazon-chime-sdk-component-library-react';
 import { useState } from 'react';
 
@@ -34,6 +35,13 @@ export const Controllers = ({ meetingManager }) => {
 			}
 		},
 		label: 'Mute',
+	};
+	const mediaCaptureButtonProps = {
+		icon: <Record />,
+		onClick: () => {
+			console.warn('recording');
+		},
+		label: 'Record',
 	};
 
 	const cameraButtonProps = {
@@ -117,6 +125,7 @@ export const Controllers = ({ meetingManager }) => {
 			<ControlBarButton {...microphoneButtonProps} />
 			<ControlBarButton {...cameraButtonProps} />
 			{/* <ControlBarButton {...dialButtonProps} /> */}
+			<ControlBarButton {...mediaCaptureButtonProps} />
 			<ControlBarButton {...screenShareButtonProps} />
 			<ControlBarButton {...hangUpButtonProps} />
 			<ControlBarButton {...leaveMeetingButtonProps} />

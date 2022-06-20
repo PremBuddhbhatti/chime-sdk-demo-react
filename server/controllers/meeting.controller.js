@@ -10,6 +10,9 @@ AWS.config.credentials = new AWS.Credentials(
 );
 // const chime = new AWS.Chime({ region: 'us-east-1' });
 const chimeSDKMeetings = new AWS.ChimeSDKMeetings({ region: 'us-east-1' });
+const chimeSDK = new AWS.Chime({ region: 'us-east-1' });
+const sts = new AWS.STS({ region: 'us-east-1' });
+
 export const createMeeting = async (req, res, next) => {
 	const { name, meeting } = req.query;
 	const region = 'us-east-1';
@@ -29,7 +32,10 @@ export const createMeeting = async (req, res, next) => {
 					},
 				},
 			})
-			.promise();
+			.promise()
+			.catch((err) => {
+				res.status(400).json(err);
+			});
 		newMeeting.Meeting.MediaPlacement['audioHostURL'] =
 			newMeeting.Meeting.MediaPlacement.AudioHostUrl;
 		meetings[meeting] = newMeeting.Meeting;
@@ -54,7 +60,10 @@ export const createMeeting = async (req, res, next) => {
 		.getMeeting({
 			MeetingId: result.MeetingId,
 		})
-		.promise();
+		.promise()
+		.catch((err) => {
+			res.status(400).json(err);
+		});
 
 	//Getting All the attendee in a Meeting
 
@@ -62,7 +71,10 @@ export const createMeeting = async (req, res, next) => {
 		.listAttendees({
 			MeetingId: result.MeetingId,
 		})
-		.promise();
+		.promise()
+		.catch((err) => {
+			res.status(400).json(err);
+		});
 
 	res.json({
 		Meeting: meetings[meeting],
@@ -78,7 +90,10 @@ export const listAttendees = async (req, res, next) => {
 		.listAttendees({
 			MeetingId: meetingId,
 		})
-		.promise();
+		.promise()
+		.catch((err) => {
+			res.status(400).json(err);
+		});
 	console.log(list);
 };
 
@@ -89,7 +104,10 @@ export const deleteMeeting = async (req, res, next) => {
 		.deleteMeeting({
 			MeetingId: meetingId,
 		})
-		.promise();
+		.promise()
+		.catch((err) => {
+			res.status(400).json(err);
+		});
 	res.status(204).send('Deleted');
 };
 
@@ -101,7 +119,10 @@ export const deleteAttendee = async (req, res, next) => {
 			AttendeeId: attendeeId,
 			MeetingId: meetingId,
 		})
-		.promise();
+		.promise()
+		.catch((err) => {
+			res.status(400).json(err);
+		});
 	res
 		.status(204)
 		.send(
@@ -121,6 +142,37 @@ export const getTranscription = async (req, res, next) => {
 				},
 			},
 		})
-		.promise();
+		.promise()
+		.catch((err) => {
+			res.status(400).json(err);
+		});
 	res.json(transcription);
+};
+
+export const getMediaRecordingsPipeline = async (req, res, next) => {
+	const { meetingId } = req.params;
+	const callerInfo = await sts.getCallerIdentity().promise();
+	const pipeline = await chimeSDK
+		.createMediaCapturePipeline({
+			SourceType: 'ChimeSdkMeeting',
+			SourceArn: `arn:aws:chime::${callerInfo.Account}:meeting:${meetingId}`,
+			SinkType: 'S3Bucket',
+			SinkArn: 'arn:aws:s3:::chime-media-recordings',
+		})
+		.promise()
+		.catch((err) => {
+			res.status(400).json(err);
+		});
+	res.json(pipeline.MediaCapturePipeline);
+};
+
+export const stopMediaRecordingsPipeline = async (req, res, next) => {
+	const { mediaPipelineId } = req.params.mediaPipelineId;
+	await chimeSDK
+		.deleteMediaCapturePipeline({ mediaPipelineId })
+		.promise()
+		.catch((err) => {
+			res.status(400).json(err);
+		});
+	res.status(200).json({});
 };

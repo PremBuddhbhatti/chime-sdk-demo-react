@@ -6,6 +6,7 @@ import {
 	deleteMeeting,
 	getTranscription,
 	listAttendees,
+	getMediaRecordingsPipeline,
 } from '../controllers/meeting.controller.js';
 
 import AWS from 'aws-sdk';
@@ -46,4 +47,8 @@ meetingRouter.delete(
 );
 
 meetingRouter.get('/:meetingId/transcription', getTranscription);
+meetingRouter.get(
+	'/:meetingId/startMediaRecording',
+	getMediaRecordingsPipeline
+);
 export default meetingRouter;
